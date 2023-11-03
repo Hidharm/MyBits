@@ -1,0 +1,34 @@
+Useful VBA macros
+# Remove Images 
+Public Sub RelaceAllGraphicsWithNothing()
+Dim rngStory As Word.Range
+Dim lngJunk As Long
+Dim lngIndex As Long
+Dim oShp As Shape
+Dim oPar As Paragraph
+  'Fix the skipped blank Header/Footer problem
+  lngJunk = ActiveDocument.Sections(1).Headers(1).Range.StoryType
+  'Iterate through all story types in the current document
+  For Each rngStory In ActiveDocument.StoryRanges
+    'Iterate through all linked stories
+    Do
+      SrcAndRplInStory rngStory, "^g^p", ""
+      SrcAndRplInStory rngStory, "^g^l", ""
+      SrcAndRplInStory rngStory, "^g", ""
+      For lngIndex = rngStory.ShapeRange.Count To 1 Step -1
+        Set oShp = rngStory.ShapeRange.Item(lngIndex)
+        If Len(oShp.Anchor.Paragraphs(1).Range) = 1 Then
+          Set oPar = oShp.Anchor.Paragraphs(1)
+          oShp.Anchor.Delete
+          oPar.Range.Delete
+        Else
+          oShp.Delete
+        End If
+      Next lngIndex
+      'Get next linked story (if any)
+      Set rngStory = rngStory.NextStoryRange
+    Loop Until rngStory Is Nothing
+  Next
+lbl_Exit:
+  Exit Sub
+End Sub
