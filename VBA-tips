@@ -32,3 +32,12 @@ Dim oPar As Paragraph
 lbl_Exit:
   Exit Sub
 End Sub
+
+
+// Extract the embedded url from a cell to next column
+Sub ExtractURL()
+Dim rng As Range
+For Each rng In Selection
+    rng.Offset(0, 1).Value = rng.Hyperlinks(1).Address
+Next rng
+End Sub
